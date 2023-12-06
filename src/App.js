@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
 
-function App() {
+import Podaci from "./Components/Podaci";
+import Forma from "./Components/Forma";
+
+const App = () => {
+  const [userData, setUserData] = useState(null);
+  const [repositories, setRepositories] = useState(null);
+
+  const searchUser = async (username) => {
+    try {
+      const userResponse = await fetch(
+        `https://api.github.com/users/${username}`
+      );
+      const userData = await userResponse.json();
+      setUserData(userData);
+
+      const repoResponse = await fetch(
+        `https://api.github.com/users/${username}/repos`
+      );
+      const repoData = await repoResponse.json();
+      setRepositories(repoData);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Forma onSearch={searchUser} />
+      <Podaci user={userData} repositories={repositories} />
     </div>
   );
-}
+};
 
 export default App;
